@@ -1,3 +1,24 @@
+// Include theming for Angular Material with `mat.theme()`.
+// This Sass mixin will define CSS variables that are used for styling Angular Material
+// components according to the Material 3 design spec.
+// Learn more about theming and how to use it for your application's
+// custom components at https://material.angular.dev/guide/theming
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$orange-palette,
+        tertiary: mat.$rose-palette,
+      ),
+      typography: Inter,
+      density: 0,
+    )
+  );
+}
+
 :root {
   --color-ink: #1f1d1a;
   --color-ink-soft: #625c53;
@@ -37,10 +58,11 @@ body {
   color: var(--color-ink);
   background:
     radial-gradient(900px 520px at 12% -8%, #f4ddc9 0%, transparent 62%),
-    radial-gradient(760px 520px at 102% 0%, #e2efe6 0%, transparent 55%),
-    var(--color-paper);
+    radial-gradient(760px 520px at 102% 0%, #e2efe6 0%, transparent 55%), var(--color-paper);
   background-attachment: fixed;
+  color-scheme: light;
   font-family: var(--font-sans);
+  font-size: 1rem;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
 }
@@ -86,6 +108,22 @@ button {
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 7px;
+  color: var(--color-ink-soft);
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.back-link:hover {
+  color: var(--color-accent);
 }
 
 .button {

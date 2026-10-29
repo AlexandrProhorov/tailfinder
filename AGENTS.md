@@ -14,8 +14,10 @@ signal-based feature stores and lazy-loaded routes.
 - Root `App` component in `src/app/app.ts` (markup `app.html`) with the shell and `<router-outlet />`
 - Feature code in `src/app/components/pets/`:
   - `data/` - model, `*.api.ts` transport, `*.store.ts` state and business rules
-  - `pages/` - lazy route components
+  - `pages/` - lazy route components (catalogue, details, adoption form)
   - `ui/` - presentational components
+- Angular Material 3 theme lives in `src/styles.scss` (`mat.theme`); Material modules are
+  imported directly by the feature component that needs them
 - Cross-cutting code in `src/app/core/` (API URL token, error mapping)
 - `app.routes.ts` lazy-loads the feature route table in `pets.routes.ts`
 
@@ -30,6 +32,11 @@ signal-based feature stores and lazy-loaded routes.
 - Stores own feature state with signals, expose read-only/computed values, and handle
   loading, errors, caching and request races.
 - Components inject stores; they never touch `HttpClient` directly.
+- Forms follow `ngOnInit` → `#initForm` → `#setSubscription`. Use a typed
+  `FormGroup<...Controls>` built with `NonNullableFormBuilder`; clean up `valueChanges`
+  with `takeUntilDestroyed(DestroyRef)`.
+- One-shot requests use `firstValueFrom` / `lastValueFrom` plus `.then` / `.catch` /
+  `.finally`; do not add `async/await` or resource abstractions just for one request.
 - Lazy-load features with `loadChildren` / `loadComponent`. Keep route tables feature-local.
 - The API base URL comes from the `API_BASE_URL` injection token; swap it to move to a real
   backend without touching stores or components.

@@ -108,8 +108,10 @@
         }
 
         <div class="profile__actions">
-          <a class="button" routerLink="/pets">Browse more pets</a>
-          <button class="button button--ghost" type="button" (click)="reload()">Refresh</button>
+          @if (pet.status !== 'adopted') {
+            <a class="button" [routerLink]="['/pets', pet.id, 'apply']">Apply to adopt</a>
+          }
+          <a class="button button--ghost" routerLink="/pets">Browse more pets</a>
         </div>
       </div>
     </article>

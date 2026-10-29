@@ -13,8 +13,8 @@ transport layer changes.
 
 - Angular 22, standalone components, no `zone.js`
 - Signals + `computed` for all feature state
-- Reactive forms (planned next iteration)
-- SCSS with design tokens, no UI framework
+- Reactive forms + Angular Material 3 (adoption application)
+- SCSS with design tokens and a custom Material theme
 - Lazy loading via `loadChildren` and `loadComponent`
 
 ## Run
@@ -38,9 +38,12 @@ src/app/
         pet.model.ts          # domain models
         pets.api.ts           # HTTP only
         pets.store.ts         # state + business rules
+        adoption.model.ts     # typed form controls + application model
+        adoption.store.ts     # local demo persistence
       pages/
         pets-list/            # lazy route
         pet-details/          # lazy route
+        adoption-form/        # reactive form + Material, lazy route
       ui/
         pet-card/             # dumb presentational component
       pets.routes.ts          # feature route table
@@ -73,6 +76,9 @@ component → store → api → HTTP
 - List and details requests use request ids, so a slow response cannot overwrite a newer one.
 - `status` lives in the URL (`/pets?status=pending`), so tabs are shareable and
   back/forward work.
+- The adoption form is a typed reactive form: `ngOnInit` → `#initForm` →
+  `#setSubscription`, `valueChanges` with `takeUntilDestroyed`, Material fields and a
+  live completion bar.
 - Loading, error and empty states are first-class, not an afterthought.
 
 ## Routes
@@ -83,6 +89,7 @@ component → store → api → HTTP
 | `/pets` | lazy children | catalogue |
 | `/pets?status=available\|pending\|adopted` | query param | status filter |
 | `/pets/:id` | lazy component | pet profile |
+| `/pets/:id/apply` | lazy component | adoption application form |
 | `/**` | lazy component | 404 |
 
 `withComponentInputBinding()` is enabled, so the `:id` route param arrives through an
@@ -95,10 +102,14 @@ Swagger Petstore was the first candidate, but its demo data is mostly test noise
 breed slugs, which makes the UI honest and presentable. The profile fields are a temporary
 demo layer; the next iteration replaces them with our own backend and real CRUD.
 
+The adoption form is persisted to `localStorage` for the demo. Submit is a one-shot
+promise handled with `.then` / `.catch` / `.finally`; swapping in a real API means changing
+`AdoptionStore.submit`, not the form.
+
 ## Next iterations
 
-1. Reactive form wizard for an adoption request (`FormArray`, custom + async validators,
-   draft autosave, `CanDeactivate`).
+1. Add `CanDeactivate` and draft autosave to the adoption form; split it into steps with
+   `FormArray` for household members.
 2. Create/edit pet pages backed by our own API, with `CanActivate` for the admin area.
 3. Query-param search, resolver-based detail loading, custom `TitleStrategy`.
 4. Component tests (Vitest) once the project rule against a test runner is lifted.

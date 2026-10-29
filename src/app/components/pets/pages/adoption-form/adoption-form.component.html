@@ -1,0 +1,229 @@
+<section class="apply">
+  <a class="back-link" [routerLink]="['/pets', id()]">
+    <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true">
+      <path
+        d="M16 10H5M9 5.5 4.5 10 9 14.5"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    Back to profile
+  </a>
+
+  @if (submitted()) {
+    <div class="form-card success-card">
+      <span class="success-card__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
+          <path
+            d="m5 12.5 4.2 4.2L19 7"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </span>
+      <p class="eyebrow">Application sent</p>
+      <h1>Thank you, {{ form.controls.fullName.value }}.</h1>
+      <p class="success-card__lead">
+        Your application for <strong>{{ petName() }}</strong> is saved. This is a demo, so the
+        data stays in your browser — no email was sent.
+      </p>
+      <div class="success-card__actions">
+        <a class="button" routerLink="/pets">Browse more pets</a>
+        <a class="button button--ghost" [routerLink]="['/pets', id()]">
+          Back to {{ petName() }}
+        </a>
+      </div>
+    </div>
+  } @else {
+    <header class="apply__header">
+      <p class="eyebrow">Adoption application</p>
+      <h1>Let's find {{ petName() }} a home.</h1>
+      <p class="apply__lead">
+        Tell us a little about yourself and your home. A few honest answers help us find the
+        right match for both sides.
+      </p>
+    </header>
+
+    <div class="apply__layout">
+      <form class="form-card" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="form-card__top">
+          <div>
+            <p class="eyebrow">Application</p>
+            <h2>Tell us about yourself</h2>
+          </div>
+          <div class="completion" aria-live="polite">
+            <div class="completion__row">
+              <span>Completed</span>
+              <strong>{{ completion() }}%</strong>
+            </div>
+            <mat-progress-bar mode="determinate" [value]="completion()" />
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section__title">About you</h3>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Full name</mat-label>
+              <input matInput formControlName="fullName" autocomplete="name" />
+              @if (form.controls.fullName.touched && form.controls.fullName.hasError('required')) {
+                <mat-error>Your name is required</mat-error>
+              } @else if (
+                form.controls.fullName.touched && form.controls.fullName.hasError('minlength')
+              ) {
+                <mat-error>Use at least 2 characters</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email" autocomplete="email" />
+              @if (form.controls.email.touched && form.controls.email.hasError('required')) {
+                <mat-error>Email is required</mat-error>
+              } @else if (form.controls.email.touched && form.controls.email.hasError('email')) {
+                <mat-error>Enter a valid email</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Phone</mat-label>
+              <input matInput type="tel" formControlName="phone" autocomplete="tel" />
+              <mat-hint>Digits, spaces, brackets and an optional +.</mat-hint>
+              @if (form.controls.phone.touched && form.controls.phone.hasError('required')) {
+                <mat-error>Phone is required</mat-error>
+              } @else if (form.controls.phone.touched && form.controls.phone.hasError('pattern')) {
+                <mat-error>Enter a valid phone number</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>City</mat-label>
+              <input matInput formControlName="city" autocomplete="address-level2" />
+              @if (form.controls.city.touched && form.controls.city.hasError('required')) {
+                <mat-error>City is required</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section__title">Your home</h3>
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Housing</mat-label>
+              <mat-select formControlName="housing" placeholder="Select one">
+                @for (option of housingOptions; track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+              @if (form.controls.housing.touched && form.controls.housing.hasError('required')) {
+                <mat-error>Choose your housing type</mat-error>
+              }
+            </mat-form-field>
+
+            <div class="field-block">
+              <p class="field-block__label">Other pets</p>
+              <mat-checkbox formControlName="hasPets">I have pets at home</mat-checkbox>
+            </div>
+
+            <mat-form-field appearance="outline" class="field-span-2">
+              <mat-label>Experience with dogs (optional)</mat-label>
+              <textarea
+                matInput
+                formControlName="experience"
+                rows="4"
+                maxlength="500"
+                placeholder="Tell us about pets you have cared for before."
+              ></textarea>
+              <mat-hint align="end">{{ form.controls.experience.value.length }}/500</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section form-section--last">
+          <h3 class="form-section__title">Contact and consent</h3>
+          <div class="field-block">
+            <p class="field-block__label" id="contact-method-label">Preferred contact</p>
+            <mat-radio-group
+              formControlName="contactMethod"
+              aria-labelledby="contact-method-label"
+              class="radio-row"
+            >
+              <mat-radio-button value="email">Email</mat-radio-button>
+              <mat-radio-button value="phone">Phone</mat-radio-button>
+            </mat-radio-group>
+          </div>
+
+          <mat-checkbox formControlName="agree" class="agree-checkbox">
+            I agree to the adoption terms and to being contacted about this application.
+          </mat-checkbox>
+          @if (form.controls.agree.touched && form.controls.agree.invalid) {
+            <p class="field-error">Please accept the terms to continue.</p>
+          }
+        </div>
+
+        <div class="form-card__actions">
+          <p class="form-card__privacy">
+            Demo form: the application is stored locally in this browser.
+          </p>
+          <button mat-flat-button type="submit" [disabled]="isSubmitting()">
+            {{ isSubmitting() ? 'Sending…' : 'Send application' }}
+          </button>
+        </div>
+
+        @if (submitError()) {
+          <p class="form-error" role="alert">{{ submitError() }}</p>
+        }
+      </form>
+
+      <aside class="pet-summary">
+        <div class="pet-summary__media">
+          @if (petPhoto(); as photo) {
+            <img [src]="photo" [alt]="petName()" />
+          } @else {
+            <span>{{ petInitial() }}</span>
+          }
+        </div>
+
+        <div class="pet-summary__body">
+          @if (petLoading()) {
+            <p class="eyebrow">Loading profile…</p>
+            <h2>{{ petName() }}</h2>
+            <p class="pet-summary__text">Fetching the latest details from the Dog CEO API.</p>
+          } @else if (pet(); as petProfile) {
+            <p class="eyebrow">{{ petBreed() }}</p>
+            <h2>{{ petProfile.name }}</h2>
+            <span
+              class="status-badge"
+              [class.status-badge--available]="petProfile.status === 'available'"
+              [class.status-badge--pending]="petProfile.status === 'pending'"
+              [class.status-badge--adopted]="petProfile.status === 'adopted'"
+            >
+              {{ petProfile.status }}
+            </span>
+            <p class="pet-summary__text">
+              You are applying to adopt {{ petProfile.name }}. We will review your answers and
+              get back to you.
+            </p>
+          } @else {
+            <p class="eyebrow">Application</p>
+            <h2>{{ petName() }}</h2>
+            <p class="pet-summary__text">
+              The profile is unavailable right now, but you can still send the application.
+            </p>
+          }
+        </div>
+
+        <ul class="pet-summary__list">
+          <li>No adoption fee in this demo</li>
+          <li>We reply within two working days</li>
+          <li>A home visit may be required</li>
+        </ul>
+      </aside>
+    </div>
+  }
+</section>
