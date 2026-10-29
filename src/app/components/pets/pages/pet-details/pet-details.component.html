@@ -1,0 +1,117 @@
+<section class="details">
+  <a class="back-link" routerLink="/pets">
+    <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true">
+      <path
+        d="M16 10H5M9 5.5 4.5 10 9 14.5"
+        stroke="currentColor"
+        stroke-width="1.6"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+    All pets
+  </a>
+
+  @if (store.selectedLoading()) {
+    <div class="profile profile--skeleton" aria-busy="true" aria-label="Loading pet profile">
+      <div class="skeleton profile__media"></div>
+      <div class="profile__content">
+        <div class="skeleton skeleton-line skeleton-line--short"></div>
+        <div class="skeleton skeleton-line skeleton-line--title"></div>
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line skeleton-line--medium"></div>
+      </div>
+    </div>
+  } @else if (store.selectedError()) {
+    <div class="state state--error" role="alert">
+      <h1>Profile not found</h1>
+      <p>{{ store.selectedError() }}</p>
+      <div class="state__actions">
+        <button class="button" type="button" (click)="reload()">Try again</button>
+        <a class="button button--ghost" routerLink="/pets">Back to all pets</a>
+      </div>
+    </div>
+  } @else if (pet(); as pet) {
+    <article class="profile">
+      <div class="profile__media">
+        @if (imageUrl(); as photo) {
+          <img
+            class="profile__photo"
+            [src]="photo"
+            [alt]="name()"
+            (error)="onImageError()"
+          />
+        } @else {
+          <span class="profile__initial" aria-hidden="true">{{ initial() }}</span>
+          <svg class="profile__paw" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 13.2c3.2 0 5.8 2.3 5.8 4.9 0 1.7-1.4 2.7-3 2.7-.9 0-1.7-.4-2.8-.4s-1.9.4-2.8.4c-1.6 0-3-1-3-2.7 0-2.6 2.6-4.9 5.8-4.9Z"
+              fill="currentColor"
+            />
+            <ellipse cx="7.2" cy="9.3" rx="2" ry="2.8" transform="rotate(-18 7.2 9.3)" fill="currentColor" />
+            <ellipse cx="12" cy="7.6" rx="2" ry="2.9" fill="currentColor" />
+            <ellipse cx="16.8" cy="9.3" rx="2" ry="2.8" transform="rotate(18 16.8 9.3)" fill="currentColor" />
+          </svg>
+        }
+
+        <span
+          class="status-badge profile__status"
+          [class.status-badge--available]="pet.status === 'available'"
+          [class.status-badge--pending]="pet.status === 'pending'"
+          [class.status-badge--adopted]="pet.status === 'adopted'"
+        >
+          {{ pet.status }}
+        </span>
+      </div>
+
+      <div class="profile__content">
+        <p class="eyebrow">{{ category() }}</p>
+        <h1>{{ name() }}</h1>
+        <p class="profile__lead">
+          Meet {{ name() }}, a {{ category() }}. This profile is currently
+          <strong>{{ pet.status }}</strong>, and the photo comes live from the Dog CEO API.
+        </p>
+
+        <dl class="facts">
+          <div>
+            <dt>Breed</dt>
+            <dd>{{ category() }}</dd>
+          </div>
+          <div>
+            <dt>Status</dt>
+            <dd class="facts__status">{{ pet.status }}</dd>
+          </div>
+          <div>
+            <dt>Looking for</dt>
+            <dd>
+              @if (pet.status === 'adopted') {
+                Already home
+              } @else if (pet.status === 'pending') {
+                A foster home
+              } @else {
+                A good human
+              }
+            </dd>
+          </div>
+        </dl>
+
+        @if (tags().length) {
+          <div class="profile__tags">
+            <p class="profile__tags-label">Tags</p>
+            <ul>
+              @for (tag of tags(); track $index) {
+                <li>{{ tag.name }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        <div class="profile__actions">
+          <a class="button" routerLink="/pets">Browse more pets</a>
+          <button class="button button--ghost" type="button" (click)="reload()">Refresh</button>
+        </div>
+      </div>
+    </article>
+  }
+</section>

@@ -1,0 +1,64 @@
+<article class="pet-card">
+  <a class="pet-card__link" [routerLink]="['/pets', pet().id]" [attr.aria-label]="'View ' + name()">
+    <div class="pet-card__media">
+      @if (imageUrl(); as photo) {
+        <img
+          class="pet-card__photo"
+          [src]="photo"
+          [alt]="name()"
+          [loading]="priority() ? 'eager' : 'lazy'"
+          [attr.fetchpriority]="priority() ? 'high' : null"
+          (error)="onImageError()"
+        />
+      } @else {
+        <span class="pet-card__initial" aria-hidden="true">{{ initial() }}</span>
+        <svg class="pet-card__paw" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M12 13.2c3.2 0 5.8 2.3 5.8 4.9 0 1.7-1.4 2.7-3 2.7-.9 0-1.7-.4-2.8-.4s-1.9.4-2.8.4c-1.6 0-3-1-3-2.7 0-2.6 2.6-4.9 5.8-4.9Z"
+            fill="currentColor"
+          />
+          <ellipse cx="7.2" cy="9.3" rx="2" ry="2.8" transform="rotate(-18 7.2 9.3)" fill="currentColor" />
+          <ellipse cx="12" cy="7.6" rx="2" ry="2.9" fill="currentColor" />
+          <ellipse cx="16.8" cy="9.3" rx="2" ry="2.8" transform="rotate(18 16.8 9.3)" fill="currentColor" />
+        </svg>
+      }
+
+      <span
+        class="status-badge pet-card__status"
+        [class.status-badge--available]="pet().status === 'available'"
+        [class.status-badge--pending]="pet().status === 'pending'"
+        [class.status-badge--adopted]="pet().status === 'adopted'"
+      >
+        {{ pet().status }}
+      </span>
+    </div>
+
+    <div class="pet-card__body">
+      <p class="pet-card__category">{{ category() }}</p>
+      <h2 class="pet-card__name">{{ name() }}</h2>
+
+      @if (tags().length) {
+        <ul class="pet-card__tags">
+          @for (tag of tags(); track $index) {
+            <li>{{ tag.name }}</li>
+          }
+        </ul>
+      } @else {
+        <p class="pet-card__note">{{ note() }}</p>
+      }
+
+      <span class="pet-card__cta">
+        View profile
+        <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true">
+          <path
+            d="M4 10h11M11 5.5 15.5 10 11 14.5"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </span>
+    </div>
+  </a>
+</article>
